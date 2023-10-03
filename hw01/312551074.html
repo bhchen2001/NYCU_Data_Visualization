@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<head>
+    <title>Data Vis HW01: Iris Scatter Plot</title>
+    <link rel = "stylesheet" href = "./312551074.css">
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+    <div class = 'row'>
+        <h3>Scatter Plot for Iris Dataset</h3>
+        x_axis:
+        <select id = 'xAxisChoice', input = 'dropdown'>
+            <option value = "sepal length">sepal length</option>
+            <option value = "sepal width">sepal width</option>
+            <option value = "petal length">petal length</option>
+            <option value = "petal width">petal width</option>
+        </select>
+        y_axis:
+        <select id = "yAxisChoice", input = 'dropdown'>
+            <option value = "sepal length">sepal length</option>
+            <option value = "sepal width">sepal width</option>
+            <option value = "petal length">petal length</option>
+            <option value = "petal width">petal width</option>
+        </select>
+    </div>
+    <div class = 'row'>
+        <div id = "my_legend"></div>
+        <script src = "./312551074_legend.js"></script>
+    </div>
+    <div>
+        <div id = "my_scatter_plot"></div>
+        <script src="./312551074_index.js"></script>
+    </div>
+</body>

@@ -1,0 +1,25 @@
+body{
+    margin: 40px;
+    overflow: hidden;
+}
+
+circle{
+    opacity: 0.5;
+}
+
+.row{
+    display: inline-block;
+}
+
+.axis_label{
+    font-size: 2em;
+}
+
+.tick text {
+    font-size: 1.2em;
+    fill: #635F5D;
+}
+
+.tick line {
+    stroke: #C0C0BB;
+}
