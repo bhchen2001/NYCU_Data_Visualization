@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+    <title>Data Vis HW03: Abalone Correlation Matrix</title>
+    <!-- <link rel = "stylesheet" href = "./312551074.css"> -->
+    <script src = "https://d3js.org/d3.v6.js"></script>
+    <!-- <script src = "https://d3js.org/d3-array.v2.min.js"></script> -->
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.1/math.js"></script>
+</head>
+<body>
+    <div class = 'row'>
+        <h3>HW03: Abalone Dataset Correlation Matrix</h3>
+    </div>
+    Sex Type:
+    <!-- notice that firefox will ignore default selected value -->
+    <select id = "sexChoice", input = "dropdown">
+        <option value = "Male" selected>Male</option>
+        <option value = "Female">Female</option>
+        <option value = "Infant">Infant</option>
+    </select>
+    <div id="legend"></div>
+    <div>
+        <div id = "my_corr_matrix"></div>
+        <script src="./312551074.js"></script>
+    </div>
+</body>
