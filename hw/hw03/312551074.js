@@ -9,7 +9,7 @@ const innerHeight = height - margin.top - margin.bottom;
 
 // input data
 // from d3 version5, promise returned from d3.csv()
-const dataset_path = "./dataset/abalone.data"
+const dataset_path = "http://vis.lab.djosix.com:2023/data/abalone.data"
 const header = ["Sex", "Length", "Diameter", "Height", "Whole weight", 
                 "Shucked weight", "Viscera weight", "Shell weight", "Rings"]
 const abalone_type = ['Male', 'Female', 'Infant'];
