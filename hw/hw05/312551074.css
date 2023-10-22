@@ -1,0 +1,20 @@
+.row{
+    width: 250px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.bt{
+    /* width: 300px; */
+    height: 39px;
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+.tooltip {
+    background-color: #000000;
+    font-size: 15px;
+    padding: 5px;
+    color: #ffffff;
+    position: absolute;
+}

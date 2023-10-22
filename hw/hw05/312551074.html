@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<head>
+    <title>Data Vis HW05: World University Rankings Stacked Bar Chart</title>
+    <link rel = "stylesheet" href = "./312551074.css">
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+</head>
+<body>
+    <div>
+        <h3>Stacked Bar Chart for World University Rankings</h3>
+    </div>
+    <fieldset>
+        <legend>Select the Sorting Format:</legend>
+
+        <div class = 'row'>
+            <h5>Sort Order:</h5>
+            <div>
+            <input type="radio" id="ascending" name="sortOrder" value="ascending"/>
+            <label for="huey">Ascending</label>
+            </div>
+        
+            <div>
+            <input type="radio" id="descending" name="sortOrder" value="descending" checked />
+            <label for="dewey">Descending</label>
+            </div>
+        </div>
+
+        <div class = 'row'>
+            <h5>Sort Choice:</h5>
+            <select id = "sortChoice", input = 'dropdown'>
+                <option value = "scores_overall" selected>scores_overall</option>
+                <option value = "scores_teaching">scores_teaching</option>
+                <option value = "scores_research">scores_research</option>
+                <option value = "scores_citations">scores_citations</option>
+                <option value = "scores_industry_income">scores_industry_income</option>
+                <option value = "scores_international_outlook">scores_international_outlook</option>
+            </select>
+        </div>
+
+        <div class = 'bt'>
+            <button id="confirm-button">Confirm</button>
+        </div>
+
+    </fieldset>
+      
+    <div class = 'row'>
+        <div id = "my_legend"></div>
+        <script src = "./312551074_legend.js"></script>
+    </div>
+    <div>
+        <div id = "my_stacked_bar_chart"></div>
+        <script src="./312551074.js"></script>
+    </div>
+</body>
