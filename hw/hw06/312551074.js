@@ -26,7 +26,7 @@ csv_data.then((data) => {
     let pre_dataset = [];
     data.forEach(function(row){
         tmp_entry = {};
-        let saledate = new Date(+row["saledate"].slice(-4), row["saledate"].slice(3, 5), row["saledate"].slice(0, 2))
+        let saledate = new Date(+row["saledate"].slice(-4), +(row["saledate"].slice(3, 5)) + 1, row["saledate"].slice(0, 2))
         // let saledate = row["saledate"].slice(-4) + row["saledate"].slice(3, 5) 
         //              + row["saledate"].slice(0, 2);
         // saledate = saledate
