@@ -177,7 +177,7 @@ function drawPlot(dataset){
             if(y.invert(event.y) > min){
                 swapArrayElements(prop_type, index, index + 1);
             }
-            console.log(prop_type);
+            // console.log(prop_type);
             stackedData = d3.stack()
                 .offset(d3.stackOffsetSilhouette)
                 .keys(prop_type)
