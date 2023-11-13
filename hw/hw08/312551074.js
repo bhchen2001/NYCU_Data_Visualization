@@ -100,12 +100,6 @@ d3.text(dataset_path).then(function(data){
         sankeydata.links[i].source = nodes_list.indexOf(sankeydata.links[i].source);
         sankeydata.links[i].target = nodes_list.indexOf(sankeydata.links[i].target);
     });
-
-    // now loop through each nodes to make nodes an array of objects
-    // rather than an array of strings
-    // sankeydata.nodes.forEach(function (d, i) {
-    //     sankeydata.nodes[i] = { "name": d };
-    // });
     console.log(sankeydata);
     drawPlot(sankeydata);
 })
@@ -128,13 +122,15 @@ function drawPlot(sankeydata){
             .attr("class", "link")
             .attr("d", d3.sankeyLinkHorizontal())
             .attr("stroke-width", function(d) {
-            return d.width;
+                return d.width;
             });
 
   // add the link titles
   link.append("title").text(function(d) {
     return d.source.name + " → " + d.target.name + "\n" + format(d.value);
   });
+
+  console.log(graph)
 
   // add in the nodes
   var node = plotG.append("g").selectAll(".node")
@@ -145,10 +141,10 @@ function drawPlot(sankeydata){
             d3
                 .drag()
                 .subject(function(d) {
-                return d;
+                    return d;
                 })
                 .on("start", function() {
-                this.parentNode.appendChild(this);
+                    this.parentNode.appendChild(this);
                 })
                 .on("drag", dragmove)
             );
@@ -157,62 +153,83 @@ function drawPlot(sankeydata){
   node
     .append("rect")
         .attr("x", function(d) {
-        return d.x0;
+            return d.x0;
         })
         .attr("y", function(d) {
-        return d.y0;
+            return d.y0;
         })
         .attr("height", function(d) {
         d.rectHeight = d.y1 - d.y0;
-        return d.y1 - d.y0;
+            return d.y1 - d.y0;
         })
         .attr("width", sankey.nodeWidth())
         .style("fill", function(d) {
-        return (d.color = color(d.name.split("_")[0]));
+            return (d.color = color(d.name.split("_")[0]));
         })
         .attr("stroke", "#000")
         .append("title")
             .text(function(d) {
-            return d.name + "\n" + format(d.value);
+                return d.name + "\n" + format(d.value);
             });
 
   // add in the title for the nodes
   node
     .append("text")
         .attr("x", function(d) {
-        return d.x0 - 6;
+            return d.x0 - 6;
         })
         .attr("y", function(d) {
-        return (d.y1 + d.y0) / 2;
+            return (d.y1 + d.y0) / 2;
         })
         .attr("dy", "0.35em")
         .attr("text-anchor", "end")
         .text(function(d) {
-        return d.name;
+            return d.name;
         })
         .filter(function(d) {
-        return d.x0 < width / 2;
+            return d.x0 < width / 2;
         })
         .attr("x", function(d) {
-        return d.x1 + 6;
+            return d.x1 + 6;
         })
         .attr("text-anchor", "start");
 
   // the function for moving the nodes
   function dragmove(d) {
+    console.log(d);
     d3.select(this)
       .select("rect")
       .attr("y", function(n) {
         n.y0 = Math.max(0, Math.min(n.y0 + d.dy, height - (n.y1 - n.y0)));
         n.y1 = n.y0 + n.rectHeight;
         return n.y0;
+      })
+      .attr("x", function(n) {
+        n.x0 = n.x0 + d.dx;
+        n.x1 = n.x1 + d.dx;
+        return n.x0;
       });
 
     d3.select(this)
       .select("text")
-      .attr("y", function(n) {
-        return (n.y0 + n.y1) / 2;
-      });
+      .attr("x", function(d) {
+        return d.x0 - 6;
+        })
+        .attr("y", function(d) {
+            return (d.y1 + d.y0) / 2;
+        })
+        .attr("dy", "0.35em")
+        .attr("text-anchor", "end")
+        .text(function(d) {
+            return d.name;
+        })
+        .filter(function(d) {
+            return d.x0 < width / 2;
+        })
+        .attr("x", function(d) {
+            return d.x1 + 6;
+        })
+        .attr("text-anchor", "start");
     sankey.update(graph);
     link.attr("d", d3.sankeyLinkHorizontal());
   }
