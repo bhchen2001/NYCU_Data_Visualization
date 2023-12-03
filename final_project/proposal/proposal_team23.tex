@@ -162,7 +162,7 @@ and the A2 level means the accident causes injury or death in more than 24 hours
 Each record contains 51 attributes, including the time, location,
 weather, road type, vehicle type, and the number of death/injury.
 Some details such as whether the driver is drunk or not, 
-which part of the vechile hit in the accident, 
+which part of the vehicle hit in the accident, 
 and the driver-contributed cause of the accident are also included.
 
 \section{Motivation}
@@ -172,12 +172,12 @@ so the analysis of the traffic accident data
 is important and necessary to prevent the accident.
 Some of the accidents are caused by the driver's behavior,
 and some are caused by the road condition 
-and the circumstance such as weather and light condition at the time that the accident happened.
+and the circumstance such as weather condition at the time that the accident happened.
 Therefore, an easy-to-understand data vislualization 
 can help the experts to analyze the cause of the accident
 and promote the right policy to drivers and pedestrians.
-By analyzing the circumstance of the accident such as road and light condition,
-we can also find the dangerous road section and the time period,
+By analyzing the circumstance of the accident,
+we can also find the dangerous road condition and time period,
 which can help the government to decrease the accident rate 
 by improving the road condition and employing more traffic police at the certain time period.
 
@@ -186,12 +186,11 @@ by improving the road condition and employing more traffic police at the certain
 The following questions are what we want to answer by visualizing the dataset.
 
 \begin{enumerate}
-  \item What is the most dangerous road type?
   \item Which time period has the highest accident rate?
-  \item Which circumstance mainly causes the accident?
+  \item Which weather condition mainly causes the accident?
   \item Is there any relationship between the 
-  driver-contributed causes and the type of vechile?
-  \item Which part of the vechile is most likely to be hit and fragile during the crash?
+  driver-contributed causes and the type of vehicle?
+  \item Which part of the vehicle is most likely to be hit and fragile during the crash?
 \end{enumerate}
 
 \section{Methodology}
@@ -222,14 +221,20 @@ So we also use the grid heatmap to represent
 the accident occurence by time of day and day of week.
 We expect it can provide another detailed view of traffic accident trend.
 
-\subsection{Vechicle and Driver Information}
+\subsection{Weather Condition}
+
+The stream chart is used to show the trend of the accident with different weather condition.
+With this chart, we expect to find the weather-related cause of the accident in certain time period.
+For example, there might have more accident caused by rainy day in rainy or typhoon season.
+
+\subsection{Vehicle and Driver Information}
 
 The stacked bar chart is used to show the relationship between the driver-contributed causes
-and the type of vechile. With this chart, we can find the most frequent cause of the accident
-and the type of vechile that corresponds to the cause.
+and the type of vehicle. With this chart, we can find the frequent cause of the accident
+and the type of vehicle that corresponds to the cause. \\
 
-The car chart shows the distribution of crash positions of the vechile.
-With this chart, we can find the most frequent crash position of the vechile
+The car chart shows the distribution of crash positions of the vehicle.
+With this chart, we can find the frequent crash position of the vehicle
 and the crash part that causes more death with A1 level data.
 
 \endgroup
