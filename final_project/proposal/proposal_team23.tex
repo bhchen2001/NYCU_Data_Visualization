@@ -132,7 +132,6 @@
     \begin{center}
       \textbf{Bo-Han Chen (陳柏翰)} \\
       Student ID: 312551074 \\
-      bhchen312551074.cs12@nycu.edu.tw
     \end{center}
   \end{minipage}
   \begin{minipage}[t]{0.45\textwidth}
@@ -195,47 +194,55 @@ The following questions are what we want to answer by visualizing the dataset.
 
 \section{Methodology}
 
-The overview of our visualization system is shown in Figure \ref{fig:overview}.
+The overview of our visualization system is shown in Figure \ref{fig:overview_part}.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{Image/overview_sample.png}
-  \caption{Overview of our project}
-  \label{fig:overview}
+  \includegraphics[width=\textwidth]{Image/overview_part.jpg}
+  \caption{Overview of our visualization system}
+  \label{fig:overview_part}
 \end{figure}
 
-\subsection{Taiwan Map}
+\subsection{Taiwan Car Crash Accident Map}
 
-The map shows the number of accident in each city
+The map (\textbf{part A}) shows the number of accident in each city
 by heatmap, with darker color means higher accident rate.
 The user can move the mouse to the city to see the statistics details
 such as the ratio of drunk driving and mobile phone usage.
 
 \subsection{Accident Statistics Over Time}
 
-The line chart is used to let user discover the trend of the accident occurence
-over months and days. And user can also select and focus on specific time period.
+The line chart (\textbf{part B}) is used to let user discover the trend of the accident occurence
+over months and years. And user can also select and focus on specific time period.
 However, it's not enough to depicts the trend of accidents 
 from the perspective of months and years.
-So we also use the grid heatmap to represent 
+So we also use the grid heatmap (\textbf{part D}) to represent 
 the accident occurence by time of day and day of week.
 We expect it can provide another detailed view of traffic accident trend.
 
 \subsection{Weather Condition}
 
-The stream chart is used to show the trend of the accident with different weather condition.
+The stream chart (\textbf{part C}) is used to show the trend of the accident with different weather condition.
 With this chart, we expect to find the weather-related cause of the accident in certain time period.
-For example, there might have more accident caused by rainy day in rainy or typhoon season.
+For example, there might have more accident caused by rainy day in monsoon or typhoon season.
 
 \subsection{Vehicle and Driver Information}
 
-The stacked bar chart is used to show the relationship between the driver-contributed causes
+The stacked bar chart (\textbf{part E}) is used to show the relationship between the driver-contributed causes
 and the type of vehicle. With this chart, we can find the frequent cause of the accident
 and the type of vehicle that corresponds to the cause. \\
 
-The car chart shows the distribution of crash positions of the vehicle.
+The car chart (\textbf{part F}) shows the distribution of crash positions of the vehicle.
 With this chart, we can find the frequent crash position of the vehicle
 and the crash part that causes more death with A1 level data.
+
+% \subsection{Color Selection}
+
+% For cartography color selection, 
+% we use the colorbrewer2\footnote{\url{https://colorbrewer2.org/}.}
+% to select the color scheme for our map.
+% For ordered data, we choose the viridis color scheme,
+% which is colorblind-friendly and perceptually uniform.
 
 \endgroup
 
