@@ -8,19 +8,24 @@
 <body>
     <h3>Data Visualization for Spotify Dataset</h3>
     <!-- button to compare the different track gerne-->
-    <div class = 'row'>
-        <div class = 'col'>
+    <div class = 'col'>
+        <div class = 'row'>
             <button id = 'update_gerne_button'>Next Gerne Page</button>
             Radar Chart for Track Gerne
-        </div>
         <div id = "my_radar_diagram"></div>
-    </div>
-    <div class = 'row'>
-        <div class = 'row'>
-            <button id = 'update_artist_button'>Next Artist Page</button>
-            Sankey Chart for Artist and Song Key
         </div>
-        <div id = 'my_sankey_diagram'></div>
+        <div class = 'row'>
+            <div class = 'row'>
+                <button id = 'update_artist_button'>Next Artist Page</button>
+                Sankey Chart for Artist and Song Key
+            </div>
+            <div id = 'my_sankey_diagram'></div>
+        </div>
+    </div>
+    <div class = 'col'>
+        <button id = 'update_stack_gerne_button'>Next Gerne Page</button>
+        Stacked Bar Chart for Track Gerne and Popularity
+        <div id = 'my_stacked_bar_diagram'></div>
         <script src="./312551074.js"></script>
-    <div>
+    </div>
 </body>

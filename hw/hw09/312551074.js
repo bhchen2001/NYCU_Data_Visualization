@@ -25,12 +25,18 @@ let ticks = [0.2, 0.4, 0.6, 0.8, 1.0];
 let features = ["valence", "energy", "acousticness", "instrumentalness", "speechiness", "mode", "danceability"];
 
 let sankey_counter = 0;
+let stack_counter = 0;
 
 const update_gerne_button = document.querySelector("#update_gerne_button");
 update_gerne_button.addEventListener("click", onclick_gerne_button);
 
 const update_artist_button = document.querySelector("#update_artist_button");
 update_artist_button.addEventListener("click", onclick_artist_button);
+
+const update_stack_gerne_button = document.querySelector("#update_stack_gerne_button");
+update_stack_gerne_button.addEventListener("click", onclick_stack_gerne_button);
+
+let stacked_bar_data = [];
 
 function onclick_gerne_button(){
     counter = counter + 5;
@@ -50,6 +56,14 @@ function onclick_artist_button(){
     randerSankey(sankey_data);
 }
 
+function onclick_stack_gerne_button(){
+    stack_counter = stack_counter + 10;
+    if(stack_counter >= stacked_bar_data.length){
+        stack_counter = 0;
+    }
+    stacked_bar_plot(stacked_bar_data.slice(stack_counter, stack_counter + 10));
+}
+
 
 d3.csv(dataset_path).then(function(data){
     console.log(data);
@@ -60,6 +74,9 @@ d3.csv(dataset_path).then(function(data){
 
     let sankey_data = sankey_data_generator(data, 0, 10);
     randerSankey(sankey_data);
+
+    let stacked_bar_data = stacked_bar_data_generator(data);
+    stacked_bar_plot(stacked_bar_data.slice(0, 10));
 })
 
 function radar_data_generator(data){
@@ -147,6 +164,42 @@ function sankey_data_generator(data, start, end){
         sankey_data.links[i].target = nodes_list.indexOf(sankey_data.links[i].target);
     });
     return sankey_data;
+}
+
+
+function stacked_bar_data_generator(data){
+    let preprocess_data = []
+    // turn popularity into 5 bins
+    data.forEach(d => {
+        if(d.popularity <= 20){
+            preprocess_data.push({"gerne": d.track_genre,"track": d.track_name, "popularity": 0});
+        }
+        else if(d.popularity <= 40){
+            preprocess_data.push({"gerne": d.track_genre,"track": d.track_name, "popularity": 1});
+        }
+        else if(d.popularity <= 60){
+            preprocess_data.push({"gerne": d.track_genre,"track": d.track_name, "popularity": 2});
+        }
+        else if(d.popularity <= 80){
+            preprocess_data.push({"gerne": d.track_genre,"track": d.track_name, "popularity": 3});
+        }
+        else{
+            preprocess_data.push({"gerne": d.track_genre,"track": d.track_name, "popularity": 4});
+        }
+    })
+    // console.log(preprocess_data)
+    // count the number of tracks for each artist and popularity
+    let stacked_rollup_data = d3.rollup(preprocess_data, v => v.length, d => d.gerne, d => d.popularity);
+    // append the objects containing artist name and count of each popularity
+    stacked_rollup_data.forEach((value, key, map) => {
+        let tmp_entry = {"0": 0, "1": 0, "2": 0, "3": 0, "4": 0, "name": key};
+        value.forEach((value, key, map) => {
+            tmp_entry[key] = value;
+        })
+        stacked_bar_data.push(tmp_entry);
+    });
+    console.log(stacked_bar_data);
+    return stacked_bar_data;
 }
 
 function renderRadar(data){
@@ -453,7 +506,7 @@ function randerSankey(sankeydata){
             .attr("dy", "0.35em")
             .attr("text-anchor", "end")
             .text(function(d) {
-                return d.name;
+                return key_map.get(d.name) || d.name;
             })
             .filter(function(d) {
                 return d.x0 < width / 2;
@@ -465,4 +518,146 @@ function randerSankey(sankeydata){
         sankey.update(graph);
         link.attr("d", d3.sankeyLinkHorizontal());
     }
+}
+
+const stack_width = 1500; const stack_height = 1000;
+
+let stack_svg = d3.select("#my_stacked_bar_diagram")
+    .append("svg")
+        .attr("width", stack_width)
+        .attr("height", stack_height)
+let stack_plotG = stack_svg
+    .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+function stacked_bar_plot(sorted_dataset){
+    // remove previous plot
+    stack_plotG.selectAll('*').remove();
+
+    let bar_feature = ["0", "1", "2", "3", "4"];
+
+    let bar_color = d3.scaleOrdinal()
+        .domain(bar_feature)
+        .range(['#ffffb2','#fecc5c','#fd8d3c','#f03b20','#bd0026']);
+
+    // console.log("inside:", sorted_dataset);
+    
+    // create stacked data
+    const stack_generator = d3.stack()
+        .keys(bar_feature)
+        .order(d3.stackOrderNone) 
+        .offset(d3.stackOffsetNone);
+    const stack_data = stack_generator(sorted_dataset);
+
+    // check the max value for range of x axis
+    let max_value = 0;
+    stack_data.forEach(function(d){
+        d.forEach(function(row){
+            if(row[1] > max_value){
+                max_value = row[1];
+            }
+        })
+    })
+    // console.log(max_value)
+
+    const y_text_space = 130;
+    // x axis
+    const x_scale = d3.scaleLinear()
+        .domain([0, max_value])
+        .range([y_text_space, stack_width - margin.right - margin.left - 10]);
+    const x_axis_bot = d3.axisBottom(x_scale)
+        .tickSize(innerHeight)
+        .tickPadding(5);
+    const x_axis_top = d3.axisTop(x_scale)
+        .tickSize(0)
+        .tickPadding(2);
+    stack_plotG
+        .append('g')
+        .call(x_axis_top)
+    stack_plotG
+        .append('g')
+        .call(x_axis_bot)
+
+    // y axis
+    const y_scale = d3.scaleBand()
+        .domain(sorted_dataset.map(function(row){
+            return row["name"];
+        }))
+        .range([0, innerHeight])
+        .padding(2);
+    const y_axis = d3.axisLeft(y_scale)
+        .tickSize(5)
+        .tickPadding(10);
+    stack_plotG
+        .append('g')
+        .attr("transform", `translate(${y_text_space}, 0)`)
+        .call(y_axis)
+        .style("font-size", "18px");
+
+    const tooltip = d3.select("body")
+        .append("div")
+        .attr("id", "chart")
+        .attr("class", "tooltip");
+
+    // tooltip events
+    const mouseover = function (d) {
+        tooltip
+            .style("opacity", 1)
+        d3.select(this)
+            .style("opacity", .4)
+    }
+    const mousemove = function (event, d) {
+        // console.log(d);
+        // get the original data of same school
+        obj = stacked_bar_data.filter(function(row){
+            return row.name === d.data.name;
+        })
+        // get the selected attribute
+        attr = Object.keys(d.data).find(key => d.data[key].toFixed(2) === (d[1] - d[0]).toFixed(2));
+        let pop = "";
+        if(attr === '0') pop = "0-20%";
+        else if(attr === '1') pop = "20-40%";
+        else if(attr === '2') pop = "40-60%";
+        else if(attr === '3') pop = "60-80%";
+        else pop = "80-100%"; 
+        tooltip
+            .html(pop + " popularity: " + (obj[0][attr]).toFixed(0) + ' songs')
+            .style("top", event.pageY - 10 + "px")
+            .style("left", event.pageX + 10 + "px");
+    }
+    const mouseleave = function (d) {
+        tooltip
+            .style("opacity", 0)
+        d3.select(this)
+            .style("opacity", 1)
+    }
+
+    // plot the bar
+    stack_plotG
+        .append('g')
+            .selectAll('g')
+            .data(stack_data)
+            .join('g')
+                .attr('fill', function(d){
+                    return bar_color(d.key);
+                })
+                .selectAll('rect')
+                .data(function(d){
+                    return d;
+                })
+                .join('rect')
+                    .attr('x', function(d){
+                        return x_scale(d[0]);
+                    })
+                    .attr('y', function(d){
+                        return y_scale(d.data.name) - 3;
+                    })
+                    .attr('width', function(d){
+                        return (x_scale(d[1]) - x_scale(d[0]));
+                    })
+                    .attr('height', 10)
+                    .style("stroke", "black")
+                    .on("mouseover", mouseover)
+                    .on("mousemove", mousemove)
+                    .on("mouseleave", mouseleave);
 }
