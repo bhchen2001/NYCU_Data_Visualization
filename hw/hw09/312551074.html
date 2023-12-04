@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+    <title>Data Vis HW09: Spotify Dataset Visualization</title>
+    <link rel = "stylesheet" href = "./312551074.css">
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+</head>
+<body>
+    <h3>Data Visualization for Spotify Dataset</h3>
+    <!-- button to compare the different track gerne-->
+    <div class = 'row'>
+        <div class = 'col'>
+            <button id = 'update_gerne_button'>Next Gerne Page</button>
+            Radar Chart for Track Gerne
+        </div>
+        <div id = "my_radar_diagram"></div>
+    </div>
+    <div class = 'row'>
+        <div class = 'row'>
+            <button id = 'update_artist_button'>Next Artist Page</button>
+            Sankey Chart for Artist and Song Key
+        </div>
+        <div id = 'my_sankey_diagram'></div>
+        <script src="./312551074.js"></script>
+    <div>
+</body>
