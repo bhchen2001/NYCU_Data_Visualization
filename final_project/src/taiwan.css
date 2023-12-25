@@ -1,0 +1,12 @@
+.tooltip {
+    background-color: #000000;
+    font-size: 15px;
+    padding: 5px;
+    color: #ffffff;
+    position: absolute;
+}
+/* .svg{
+    background: rgba(60, 150, 224, 0.877);
+    height: 80vh;
+    width: 70vh;
+} */
