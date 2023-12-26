@@ -6,4 +6,21 @@
     position: absolute;
     border-radius: 10px;
     opacity: 1;
+    width: auto;
+}
+
+.date-input {
+    width: 100px;
+}
+
+.input-label{
+    width: 30px;
+    text-align: center;
+}
+
+.row{
+    display: inline-block;
+  /* width: 100px;
+  height: 50px; */
+  border: 1px solid rgba(255, 0, 0, 0.267);
 }

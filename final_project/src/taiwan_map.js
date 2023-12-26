@@ -1,22 +1,81 @@
-const county_geomap_api =
-  "../dataset/taiwan-geomap.json";
-const county_revenue_api =
-  "../dataset/accident_count.json";
+drawMap(1, 12);
+
+const county_geomap_api = "../dataset/taiwan-geomap.json";
+
 
 let countiesData = [];
 
-getMapData();
+function drawMap(start_month, end_month) {
 
-function getMapData() {
-  axios.get(county_revenue_api).then((res) => {
-    countiesData = res.data[0].data;
-    render();
-  });
+  /* read the data from the csv file */
+  d3.csv(csv_file_path).then(function(data){
+    /* format the Date_ID */
+    var parseDate = d3.timeParse("%Y%m%d%H%M%S");
+    data.forEach(function(d) {
+      d.Date_ID = parseDate(d.Date_ID);
+    });
+    /* keep valid rows */
+    data = data.filter(function(d) {
+      return d.Date_ID.getMonth() + 1 >= start_month && d.Date_ID.getMonth() + 1 <= end_month;
+    });
+    /* keep valid rows */
+    data = data.filter(function(d) {
+      return d.Date_ID.getMonth() + 1 >= start_month && d.Date_ID.getMonth() + 1 <= end_month;
+    });
+    /* drop other columns */
+    data = data.map(function(d) {
+      return {
+        city: d.發生地點,
+        mobile: d.行動電話或電腦或其他相類功能裝置名稱,
+        drunk: d.是否酒駕,
+        death: d.死亡人數,
+        injury: d.受傷人數
+      };
+    });
+
+    /* count the number of each attribute for each city by using rollup */
+    var count = d3.rollup(data, function(v){
+      return{
+        mobile: d3.sum(v, function(d){ return d.mobile; }),
+        drunk: d3.sum(v, function(d){ return d.drunk; }),
+        death: d3.sum(v, function(d){ return d.death; }),
+        injury: d3.sum(v, function(d){ return d.injury; })
+      }
+    }
+    , d => d.city);
+
+    /* sort the cities by the number of death */
+    count = Array.from(count).sort(function(a, b){
+      return b[1].death - a[1].death;
+    }
+    );
+
+    /* add rank to each city */
+    count.forEach(function(d, i){
+      d[1].rank = i + 1;
+    });
+
+    /* create a new array to store the data */
+    count.forEach(function(d){
+      countiesData.push({
+        city: d[0],
+        death: d[1].death,
+        mobile: d[1].mobile,
+        drunk: d[1].drunk,
+        injury: d[1].injury,
+        rank: d[1].rank
+      });
+    });
+
+    renderMap();  
+  })
 }
 
-function render() {
+function renderMap() {
+  /* remove te previous svg and tooltip */
+  d3.select("#taiwan").select("svg").remove();
+  d3.select("#taiwan").select(".tooltip").remove();
 
-  // 設置畫布
   let svg = d3
     .select("#taiwan")
     .append("svg")
@@ -35,10 +94,10 @@ function render() {
   // Define the gradient stops
   gradient.append("stop")
     .attr("offset", "0%")
-    .attr("stop-color", "#18a8f5"); // Light blue
+    .attr("stop-color", "#18a8f5"); // Light color
   gradient.append("stop")
     .attr("offset", "100%")
-    .attr("stop-color", "#181cf5"); // Dark blue
+    .attr("stop-color", "#181cf5"); // Dark color
 
   rect = svg
     .append("rect")
@@ -49,7 +108,7 @@ function render() {
 
   rect
     .transition()
-    .duration(500)
+    .duration(600)
     .attr("opacity", 0.7);
 
   const tooltip = d3
@@ -64,8 +123,9 @@ function render() {
       .transition()
       .duration(50)
       .style("opacity", 1)
-      .style("stroke-width", 2.5);
-    // show tooltip
+    d3
+      .select(this)
+      .style("stroke-width", 4);
     tooltip
       .style("background", "rgba(0, 0, 0, 0.7)")
       .attr("opacity", 0.7);
@@ -84,18 +144,17 @@ function render() {
       .transition()
       .duration(100)
       .style("opacity", 0.8)
-      .style("stroke-width", 1);
-    // kill tooltip
+    d3
+      .select(this)
+      .style("stroke-width", 2);
     tooltip
       .style("background", "rgba(0, 0, 0, 0)").html("")
       .attr("opacity", 0);
   }
 
   d3.json(county_geomap_api).then((data) => {
-    //     轉成 topojson
+    /* turn into topo data */
     const counties = topojson.feature(data, data.objects.COUNTY_MOI_1090820);
-
-    //     將 rank 和 revenue 加入 counties.features 內
     counties.features.forEach(({ properties }, index) => {
       countiesData.find(({ rank, death, city }) => {
         if (properties.COUNTYNAME === city) {
@@ -105,17 +164,15 @@ function render() {
       });
     });
 
-    // 設置中心位置與縮放大小
+    /* set center and scale */
     const projection = d3.geoMercator().center([122, 24.3]).scale(9000);
-    // 將投影後的資料轉為路徑資料
+    /* turn the projection into path data */
     const path = d3.geoPath().projection;
 
-    // 設置顏色漸層
+    /* Build color scale */
     const colorScale = d3
       .scaleLinear()
-      // 數字範圍
       .domain([1, 22])
-      // 顏色範圍
       .range([
         "#e31a1c", // <= the darkest shade we want
         "#ffeda0" // <= the lightest shade we want
@@ -127,15 +184,15 @@ function render() {
       .join("path")
       .attr("class", "geo-path")
       .attr("d", path(projection))
-      .style("stroke", "#ffffff")
-      .style("stroke-width", "0")
+      /* slow down the efficiency */
+      // .style("stroke", "#ffffff")
+      .style("stroke-width", 2)
       .style("fill", "none")
       .style("opacity", 0);
 
     geoPath
       .transition()
-      .duration(600)
-      .style("stroke-width", "2")
+      .duration(transition_time)
       .style("fill", (d) => {
           return colorScale(d?.rank) || "#d6d6d6";
       })

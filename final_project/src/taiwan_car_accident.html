@@ -4,13 +4,30 @@
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
+
+    <!-- src for bootstrap datepicker -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- my car accident library -->
+    <script src = "time_agent.js"></script>
+    <script src = "datepicker.js"></script>
     <script src = "taiwan_map.js"></script>
     <script src = "heatmap.js"></script>
-    <script src = "car_top_view.js"></script>
+    <!-- <script src = "car_top_view.js"></script> -->
     <link rel="stylesheet" href="taiwan_car_accident.css"></head>
 </head>
 <body>
-    <div id = 'taiwan'></div>
-    <div id = 'heatmap'></div>
+    <div class="input-group input-daterange">
+        <input type="text" class="date-input" name="datepicker" id="datepicker" />
+        <div class = "input-label">to</div>
+        <input type="text" class="date-input" name="datepicker2" id="datepicker2" />
+    </div>
+
+    <div class = "row" id = 'taiwan'></div> 
+    <div class = "row" id = 'heatmap'></div>
     <!-- <div id = "car"></div> -->
 </body>

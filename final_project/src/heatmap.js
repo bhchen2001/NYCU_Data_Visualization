@@ -1,22 +1,25 @@
-getHeatmapData();
+drawHeatmap(1, 12);
 
-function getHeatmapData(){
-    /* Labels of row and columns */
-    var myGroups = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    var myVars = ["0-4", "4-8", "8-12", "12-16", "16-20", "20-24"];
+const heatGroups = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const heatVars = ["0-4", "4-8", "8-12", "12-16", "16-20", "20-24"];
+
+function drawHeatmap(start_month, end_month){
 
     /* read the data from the csv file */
-    d3.csv("../dataset/time_dependent_data_A1.csv").then(function(data) {
+    d3.csv(csv_file_path).then(function(data) {
         /* format the Date_ID */
         var parseDate = d3.timeParse("%Y%m%d%H%M%S");
         data.forEach(function(d) {
             d.Date_ID = parseDate(d.Date_ID);
         });
-        // console.log(data);
+        /* keep valid rows */
+        data = data.filter(function(d) {
+            return d.Date_ID.getMonth() + 1 >= start_month && d.Date_ID.getMonth() + 1 <= end_month;
+        });
         /* drop other columns */
         data = data.map(function(d) {
             return {
-                weekday: myGroups[d.Date_ID.getDay()],
+                weekday: heatGroups[d.Date_ID.getDay()],
                 /* split hours into 6 groups
                  * 0: 0-4
                  * 1: 4-8
@@ -25,17 +28,16 @@ function getHeatmapData(){
                  * 4: 16-20
                  * 5: 20-24
                  */
-                timeslot: myVars[Math.floor(d.Date_ID.getHours() / 4)]
+                timeslot: heatVars[Math.floor(d.Date_ID.getHours() / 4)]
             };
         });
-        console.log(data);
         /* count the number of people in each timeslot of each weekday */
         var count = [];
-        for (var i = 0; i < myGroups.length; i++) {
-            for (var j = 0; j < myVars.length; j++) {
+        for (var i = 0; i < heatGroups.length; i++) {
+            for (var j = 0; j < heatVars.length; j++) {
                 count.push({
-                    weekday: myGroups[i],
-                    timeslot: myVars[j],
+                    weekday: heatGroups[i],
+                    timeslot: heatVars[j],
                     value: 0
                 });
             }
@@ -47,12 +49,15 @@ function getHeatmapData(){
                 }
             });
         });
-        console.log(count);
         renderHeatmap(count);
     });
 }
 
 function renderHeatmap(count){
+    /* remove the previous svg and tooltip */
+    d3.select("#heatmap").select("svg").remove();
+    d3.select("#heatmap").select(".tooltip").remove();
+
     /* set the dimensions and margins of the graph */
     var margin = { top: 30, right: 30, bottom: 30, left: 100 },
         width = 900 - margin.left - margin.right,
@@ -68,16 +73,12 @@ function renderHeatmap(count){
             "translate(" + margin.left + "," + margin.top + ")");
 
     /* Labels of row and columns */
-    var myGroups = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    var myVars = ["0-4", "4-8", "8-12", "12-16", "16-20", "20-24"];
-
-    let xLabels = myGroups.map((d) => d);
     let yLabels = ["12am - 4am", "4am - 8am", "8am - 12pm", "12pm - 4pm", "4pm - 8pm", "8pm - 12am"];
 
     /* Build X scales and axis: */
     var x = d3.scaleBand()
         .range([0, width])
-        .domain(myGroups)
+        .domain(heatGroups)
         .padding(0.01);
     svg.append("g")
         .style("font-size", 15)
@@ -88,12 +89,20 @@ function renderHeatmap(count){
     /* Build Y scales and axis: */
     var y = d3.scaleBand()
         .range([0, height])
-        .domain(myVars)
+        .domain(heatVars)
         .padding(0.01);
     svg.append("g")
         .style("font-size", 15)
-        .call(d3.axisLeft(y).tickSize(0).tickFormat(function(d) { return yLabels[myVars.indexOf(d)];}))
+        .call(d3.axisLeft(y).tickSize(0).tickFormat(function(d) { return yLabels[heatVars.indexOf(d)];}))
         .select(".domain").remove();
+
+    svg.selectAll(".tick text")
+        .style("opacity", 0);
+
+    svg.selectAll(".tick text")
+        .transition()
+        .duration(transition_time)
+        .style("opacity", 1);
 
     /* Build color scale */
     var myColor = d3.scaleLinear()
@@ -130,7 +139,7 @@ function renderHeatmap(count){
     };
 
     /* add the squares */
-    svg.selectAll()
+    heatmapPlot = svg.selectAll()
         .data(count, function(d) { return d.weekday + ':' + d.timeslot; })
         .enter()
         .append("rect")
@@ -140,10 +149,17 @@ function renderHeatmap(count){
         .attr("ry", 4)
         .attr("width", x.bandwidth())
         .attr("height", y.bandwidth())
+        .style("opacity", 0);
+
+    heatmapPlot
+        .transition()
+        .duration(transition_time)
         .style("fill", function(d) { return myColor(d.value) })
         .style("stroke-width", 1)
         .style("stroke", "#000000")
-        .style("opacity", 0.8)
+        .style("opacity", 0.8);
+
+    heatmapPlot
         .on("mouseover", mouseover)
         .on("mousemove", mousemove)
         .on("mouseleave", mouseleave);
@@ -160,13 +176,25 @@ function renderHeatmap(count){
     legend.append("rect")
         .attr("width", 20)
         .attr("height", 20)
+        .style("opacity", 0);
+
+    legend.selectAll("rect")
+        .transition()
+        .duration(transition_time)
+        .style("opacity", 0.8)
         .style("fill", myColor);
 
     legend.append("text")
         .attr("x", 26)
         .attr("y", 10)
         .attr("dy", ".35em")
-        .text(String);
+        .text(String)
+        .style("opacity", 0);
+
+    legend.selectAll("text")
+        .transition()
+        .duration(transition_time)
+        .style("opacity", 0.8);
 
     /* add the title */
     svg.append("text")
