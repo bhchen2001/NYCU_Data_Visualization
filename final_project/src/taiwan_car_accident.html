@@ -17,17 +17,41 @@
     <script src = "datepicker.js"></script>
     <script src = "taiwan_map.js"></script>
     <script src = "heatmap.js"></script>
+    <script src = "linechart.js"></script>
+    <script src = "streamchart.js"></script>
+    <script src = "cause_barchart.js"></script>
+    <script src = "car_top_view.js"></script>
     <!-- <script src = "car_top_view.js"></script> -->
     <link rel="stylesheet" href="taiwan_car_accident.css"></head>
 </head>
 <body>
     <div class="input-group input-daterange">
+        <div class = "title"> Taiwan Car Accident Statistics</div>
+        <div class = "text_div"> From </div>
         <input type="text" class="date-input" name="datepicker" id="datepicker" />
-        <div class = "input-label">to</div>
+        <div class = "text_div">to</div>
         <input type="text" class="date-input" name="datepicker2" id="datepicker2" />
+
+        <select id = "accident_type" onchange = 'getSelectType(this.value)'>
+            <option>Select the Type of Accident</option>
+            <option value="1">Type A1</option>
+            <option value="2">Type A2</option>
+            <option value="3">Whole Data</option>
+        </select>
+
+        <div class = "author">312551074 陳柏翰 <br> 312553027 林煦 </div>
     </div>
 
-    <div class = "row" id = 'taiwan'></div> 
-    <div class = "row" id = 'heatmap'></div>
-    <!-- <div id = "car"></div> -->
+    <div class = "test">
+        <div class = "row" id = 'taiwan'></div>
+        <div class = "row">
+            <div id = 'line_chart'></div>
+            <div id = "stream_chart"></div>
+        </div>
+    </div>
+    <div class = "test">
+        <div class = "row2" id = 'heatmap'></div>
+        <div class = "row2" id = 'stack_bar'></div>
+        <div class = "row2" id = "car"></div>
+    </div>
 </body>

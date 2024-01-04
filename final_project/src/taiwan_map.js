@@ -1,27 +1,31 @@
-drawMap(1, 12);
 
 const county_geomap_api = "../dataset/taiwan-geomap.json";
 
 
 let countiesData = [];
 
-function drawMap(start_month, end_month) {
+function drawMap(start_month, end_month,  data) {
+
+  // return new Promise((resolve, reject) => {
+    // Do some asynchronous operation here
+    // When the operation is done, call resolve
+    // If there's an error, call reject
 
   /* read the data from the csv file */
-  d3.csv(csv_file_path).then(function(data){
+  // d3.csv(csv_file_path).then(function(data){
     /* format the Date_ID */
-    var parseDate = d3.timeParse("%Y%m%d%H%M%S");
-    data.forEach(function(d) {
-      d.Date_ID = parseDate(d.Date_ID);
-    });
-    /* keep valid rows */
-    data = data.filter(function(d) {
-      return d.Date_ID.getMonth() + 1 >= start_month && d.Date_ID.getMonth() + 1 <= end_month;
-    });
-    /* keep valid rows */
-    data = data.filter(function(d) {
-      return d.Date_ID.getMonth() + 1 >= start_month && d.Date_ID.getMonth() + 1 <= end_month;
-    });
+    // var parseDate = d3.timeParse("%Y%m%d%H%M%S");
+    // data.forEach(function(d) {
+    //   d.Date_ID = parseDate(d.Date_ID);
+    // });
+    // /* keep valid rows */
+    // data = data.filter(function(d) {
+    //   return d.Date_ID.getMonth() + 1 >= start_month && d.Date_ID.getMonth() + 1 <= end_month;
+    // });
+    // /* keep valid rows */
+    // data = data.filter(function(d) {
+    //   return d.Date_ID.getMonth() + 1 >= start_month && d.Date_ID.getMonth() + 1 <= end_month;
+    // });
     /* drop other columns */
     data = data.map(function(d) {
       return {
@@ -68,7 +72,14 @@ function drawMap(start_month, end_month) {
     });
 
     renderMap();  
-  })
+  // })
+  // .then(() => {
+  //   resolve("done");
+  // })
+  // .catch((error) => {
+  //   reject(error);
+  // });
+  // });
 }
 
 function renderMap() {
@@ -104,12 +115,12 @@ function renderMap() {
     .attr("width", "100%")
     .attr("height", "100%")
     .style("fill", "url(#oceanGradient)")
-    .attr("opacity", 0);
-
-  rect
-    .transition()
-    .duration(600)
     .attr("opacity", 0.7);
+
+  // rect
+  //   .transition()
+  //   .duration(600)
+  //   .attr("opacity", 0.7);
 
   const tooltip = d3
     .select("#taiwan")
@@ -133,6 +144,7 @@ function renderMap() {
 
   function mousemove(event, d) {
     tooltip
+      .style("color", "white")
       .html(d.properties.COUNTYNAME + "死亡人數 : " + d.death)
       .style("top", event.pageY - 10 + "px")
       .style("left", event.pageX + 30 + "px");
@@ -165,7 +177,7 @@ function renderMap() {
     });
 
     /* set center and scale */
-    const projection = d3.geoMercator().center([122, 24.3]).scale(9000);
+    const projection = d3.geoMercator().center([121.5, 24.5]).scale(10000);
     /* turn the projection into path data */
     const path = d3.geoPath().projection;
 
@@ -185,7 +197,7 @@ function renderMap() {
       .attr("class", "geo-path")
       .attr("d", path(projection))
       /* slow down the efficiency */
-      // .style("stroke", "#ffffff")
+      // .style("stroke", "#000000")
       .style("stroke-width", 2)
       .style("fill", "none")
       .style("opacity", 0);
