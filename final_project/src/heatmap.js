@@ -128,7 +128,7 @@ function renderHeatmap(count){
     var mousemove = function(event, d) {
         tooltip
             .style("color", "white")
-            .html("死亡人數 : " + d.value)
+            .html("時間: " + d.timeslot + "<br>星期: " + d.weekday + "<br>案例: " + d.value)
             .style("left", event.pageX + 10 + "px")
             .style("top", event.pageY + 10 + "px");
     };

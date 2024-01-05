@@ -1,6 +1,12 @@
 
 function death_line(datestart, dateend){
     d3.csv(csv_file_path).then(function(raw_data) {
+        /* filter the data with current_county */
+        if(current_county != "全台灣"){
+            raw_data = raw_data.filter(function(d) {
+                return d.發生地點 == current_county;
+            });
+        }
         // create container
         var newDiv = document.createElement("div");
         newDiv.id = "line_legend";
@@ -324,13 +330,13 @@ function death_line(datestart, dateend){
             if (dateend - datestart >= 2 && dateend - datestart <= 10){
                 tooltip
                 .style("color", "white")
-                .html(`Date: ${dateParser(d.date.getTime())} ~ ${dateParser(d.endDate.getTime())}<br>Death toll: ${d.death_num}`);
+                .html(`Date: ${dateParser(d.date.getTime())} ~ ${dateParser(d.endDate.getTime())}<br>死亡人數: ${d.death_num}`);
 
             }
             else{
                 tooltip
                 .style("color", "white")
-                .html(`Date: ${dateParser(d.date.getTime())}<br>Death toll: ${d.death_num}`);
+                .html(`Date: ${dateParser(d.date.getTime())}<br>死亡人數: ${d.death_num}`);
             }
         }
 
@@ -344,12 +350,12 @@ function death_line(datestart, dateend){
             if (dateend - datestart >= 2 && dateend - datestart <= 10){
                 tooltip
                 .style("color", "white")
-                .html(`Date: ${dateParser(d.date.getTime())} ~ ${dateParser(d.endDate.getTime())}<br>Injuries: ${d.injury_num}`);
+                .html(`Date: ${dateParser(d.date.getTime())} ~ ${dateParser(d.endDate.getTime())}<br>受傷人數: ${d.injury_num}`);
             }
             else{
                 tooltip
                 .style("color", "white")
-                .html(`Date: ${dateParser(d.date.getTime())}<br>Injuries: ${d.injury_num}`);
+                .html(`Date: ${dateParser(d.date.getTime())}<br>受傷人數: ${d.injury_num}`);
             }
         }
 
@@ -376,8 +382,8 @@ function death_line(datestart, dateend){
 
         // set color
         const legendData = [
-            { className: "Death toll", color: "#C70039" },
-            { className: "Injuries", color: "#FFC300" },
+            { className: "死亡人數", color: "#C70039" },
+            { className: "受傷人數", color: "#FFC300" },
         ];
 
         // create legend block

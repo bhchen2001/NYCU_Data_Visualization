@@ -4,7 +4,15 @@ const car_position_chinese = ['車輛左側', '車頭', '車尾', '車頭右側'
 
 function drawCarTopView(start_month, end_month){
     /* read the csv file */
-    d3.csv("../dataset/A2_car_hit.csv").then(function(data){
+    d3.csv(car_hit_csv_file).then(function(data){
+
+        /* filter the data with current_county */
+        if(current_county != "全台灣"){
+            data = data.filter(function(d) {
+                return d.county == current_county;
+            });
+        }
+
         /* format the Date_ID */
         var parseDate = d3.timeParse("%Y%m%d");
         data.forEach(function(d) {
@@ -84,7 +92,7 @@ function renderCarTopView(accident_data){
             // console.log(c);
 
             tooltip
-                .html("類別: " + car_position_chinese[car_position.indexOf(c)] + "<br>人數: " + accident_data[car_position.indexOf(c)].value)
+                .html("撞擊位置: " + car_position_chinese[car_position.indexOf(c)] + "<br>案例: " + accident_data[car_position.indexOf(c)].value)
                 .style("color", "white")
                 .style("left", event.pageX + 10 + "px")
                 .style("top", event.pageY + 10 + "px");

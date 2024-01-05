@@ -50,7 +50,7 @@ function drawMap(start_month, end_month,  data) {
 
     /* sort the cities by the number of death */
     count = Array.from(count).sort(function(a, b){
-      return b[1].death - a[1].death;
+      return ((b[1].death + b[1].injury) - (a[1].death + a[1].injury)) || (b[1].death - a[1].death) || (b[1].injury - a[1].injury);
     }
     );
 
@@ -134,9 +134,12 @@ function renderMap() {
       .transition()
       .duration(50)
       .style("opacity", 1)
-    d3
-      .select(this)
-      .style("stroke-width", 4);
+    if(current_county != d.properties.COUNTYNAME){
+      d3
+        .select(this)
+        .style("stroke", "white")
+        .style("stroke-width", 2);
+    }
     tooltip
       .style("background", "rgba(0, 0, 0, 0.7)")
       .attr("opacity", 0.7);
@@ -145,7 +148,7 @@ function renderMap() {
   function mousemove(event, d) {
     tooltip
       .style("color", "white")
-      .html(d.properties.COUNTYNAME + "死亡人數 : " + d.death)
+      .html("縣市: " + d.properties.COUNTYNAME + "<br>" + "死亡人數: " + d.death + "<br>" + "受傷人數: " + d.injury + "<br>" + "酒駕案例: " + d.drunk + "<br>" + "使用行動電話案例: " + d.mobile)
       .style("top", event.pageY - 10 + "px")
       .style("left", event.pageX + 30 + "px");
   }
@@ -156,9 +159,12 @@ function renderMap() {
       .transition()
       .duration(100)
       .style("opacity", 0.8)
-    d3
-      .select(this)
-      .style("stroke-width", 2);
+    // console.log("county in tooltip: " + county)
+    if(d.properties.COUNTYNAME != current_county){
+      d3
+        .select(this)
+        .style("stroke-width", 0);
+    }
     tooltip
       .style("background", "rgba(0, 0, 0, 0)").html("")
       .attr("opacity", 0);
@@ -168,10 +174,13 @@ function renderMap() {
     /* turn into topo data */
     const counties = topojson.feature(data, data.objects.COUNTY_MOI_1090820);
     counties.features.forEach(({ properties }, index) => {
-      countiesData.find(({ rank, death, city }) => {
+      countiesData.find(({ rank, death, city, injury, drunk, mobile }) => {
         if (properties.COUNTYNAME === city) {
           counties.features[index].rank = rank;
           counties.features[index].death = death;
+          counties.features[index].injury = injury;
+          counties.features[index].drunk = drunk;
+          counties.features[index].mobile = mobile;
         }
       });
     });
@@ -190,6 +199,22 @@ function renderMap() {
         "#ffeda0" // <= the lightest shade we want
       ]);
 
+    function onClick(event, d){
+      if(current_county == d.properties.COUNTYNAME){
+        d3.select(this).style("stroke", "white").style("stroke-width", 0);
+        current_county = "全台灣";
+        getSelectCounty();
+        return;
+      }
+      /* all other counties not highlighted */
+      d3.selectAll(".geo-path").style("stroke-width", 0);
+      d3.select(this).style("stroke", "white").style("stroke-width", 6);
+      // console.log("prev: " + current_county);
+      current_county = d.properties.COUNTYNAME;
+      // console.log("current: " + current_county);
+      getSelectCounty();
+    }
+
     const geoPath = svg
       .selectAll(".geo-path")
       .data(counties.features)
@@ -200,7 +225,18 @@ function renderMap() {
       // .style("stroke", "#000000")
       .style("stroke-width", 2)
       .style("fill", "none")
-      .style("opacity", 0);
+      .style("opacity", 0)
+      .on("click", onClick);
+
+    /* if current_county is not "全台灣", then highlight the county */
+    if(current_county != "全台灣"){
+      geoPath
+        .filter(function(d){
+          return d.properties.COUNTYNAME == current_county;
+        })
+        .style("stroke", "white")
+        .style("stroke-width", 6);
+    }
 
     geoPath
       .transition()

@@ -1,6 +1,12 @@
 
 function weather_stream(dateStart, dateEnd){
     d3.csv(csv_file_path).then(function(raw_data) {
+        /* filter the data with current_county */
+        if(current_county != "全台灣"){
+            raw_data = raw_data.filter(function(d) {
+                return d.發生地點 == current_county;
+            });
+        }
         // create container
         var newDiv = document.createElement("div");
         newDiv.id = "legend";
@@ -101,21 +107,21 @@ function weather_stream(dateStart, dateEnd){
             .style("opacity", 0)
             .transition()
             .duration(transition_time)
-            .style("opacity", 1);
+            .style("opacity", 0.8);
 
         svg
             .selectAll("line")
             .style("opacity", 0)
             .transition()
             .duration(transition_time)
-            .style("opacity", 1);
+            .style("opacity", 0.8);
 
         svg
             .selectAll("text")
             .style("opacity", 0)
             .transition()
             .duration(transition_time)
-            .style("opacity", 1);
+            .style("opacity", 0.8);
 
 
         // color palette
@@ -146,7 +152,7 @@ function weather_stream(dateStart, dateEnd){
             .selectAll("path")
             .transition()
             .duration(transition_time)
-            .style("opacity", 1);
+            .style("opacity", 0.8);
 
 
         // add tooltip
@@ -160,7 +166,8 @@ function weather_stream(dateStart, dateEnd){
         var mouseover = function(event, d) {
             d3.select(this) 
                 .style("stroke", "black")
-                .style("stroke-width", "2.5px");
+                .style("stroke-width", "2.5px")
+                .style("opacity", 1);
         };
 
         var mousemove = function(event, d) {
@@ -192,7 +199,7 @@ function weather_stream(dateStart, dateEnd){
                 tooltip
                     .style("opacity", 1)
                     .style("color", "white")
-                    .html(`Weather: ${category}<br>Date: ${dateParser(date_point)}<br>Count: ${value}`)
+                    .html(`天氣: ${category}<br>Date: ${dateParser(date_point)}<br>案例數: ${value}`)
                     .style("left", event.pageX + 10 + "px")
                     .style("top", event.pageY + 10 + "px");
         }
@@ -201,7 +208,8 @@ function weather_stream(dateStart, dateEnd){
             tooltip
                 .style("opacity", 0);
             d3.select(this)
-                .style("stroke", "none"); 
+                .style("stroke", "none")
+                .style("opacity", 0.8);
         };
 
         // add mouseevent
@@ -226,9 +234,9 @@ function weather_stream(dateStart, dateEnd){
 
         // set color
         const legendData = [
-            { className: "Sunny", color: colors[0] },
-            { className: "Cloudy", color: colors[1] },
-            { className: "Rainy", color: colors[2] },
+            { className: "晴天", color: colors[0] },
+            { className: "陰天", color: colors[1] },
+            { className: "雨天", color: colors[2] },
         ];
 
         // create legend block

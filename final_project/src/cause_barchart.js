@@ -1,6 +1,13 @@
 
 function cause_bar(dateStart, dateEnd){
-    d3.csv("../dataset/cause_vehicle_A2_time.csv").then(function(data) {
+    d3.csv(cause_csv_file_path).then(function(data) {
+
+        /* filter the data with current_county */
+        if(current_county != "全台灣"){
+            data = data.filter(function(d) {
+                return d.發生地點 == current_county;
+            });
+        }
 
         // convert dateStart and dateEnd to proper format
         let year = "2022";
@@ -34,10 +41,26 @@ function cause_bar(dateStart, dateEnd){
         });
 
         // calculate proportion
+        // const proportionsArray = [];
+        // Object.keys(groupedData).forEach(cause => {
+        //     const total = Object.values(groupedData[cause]).reduce((a, b) => a + b, 0);
+        //     const causeProportion = { '肇因研判子類別名稱-個別': cause };
+
+        //     vehicleTypes.forEach(vehicleType => {
+        //         causeProportion[vehicleType] = (groupedData[cause][vehicleType] / total).toFixed(4);
+        //     });
+
+        //     proportionsArray.push(causeProportion);
+        // });
+
+        // proportionsArray['columns'] = ['肇因研判子類別名稱-個別'].concat(vehicleTypes);     
+        // data = proportionsArray;
+
+        // calculate proportion
         const proportionsArray = [];
         Object.keys(groupedData).forEach(cause => {
             const total = Object.values(groupedData[cause]).reduce((a, b) => a + b, 0);
-            const causeProportion = { '肇因研判子類別名稱-個別': cause };
+            const causeProportion = { '肇因研判子類別名稱-個別': cause, total: total }; // Add total property
 
             vehicleTypes.forEach(vehicleType => {
                 causeProportion[vehicleType] = (groupedData[cause][vehicleType] / total).toFixed(4);
@@ -45,6 +68,9 @@ function cause_bar(dateStart, dateEnd){
 
             proportionsArray.push(causeProportion);
         });
+
+        // Sort proportionsArray by total
+        proportionsArray.sort((a, b) => b.total - a.total);
 
         proportionsArray['columns'] = ['肇因研判子類別名稱-個別'].concat(vehicleTypes);     
         data = proportionsArray;
