@@ -19,6 +19,8 @@ let dataset_path = "http://vis.lab.djosix.com:2023/data/car.data";
 let keys = ['buying', 'maint', 'doors', 'persons', 'lugboot', 'safety', 'class'];
 let key_set = [];
 let new_data = [];
+let csv_data = [];
+let sankeydata = {"nodes" : [], "links" : []};
 // var color = d3.scaleOrdinal(d3.schemeCategory10);
 var formatNumber = d3.format(",.0f") // zero decimal places
 var format = function(d) { return formatNumber(d); }
@@ -29,8 +31,12 @@ const color = d3.scaleOrdinal()
 d3.text(dataset_path).then(function(data){
     let header_data = 'buying,maint,doors,persons,lugboot,safety,class\n' + data;
     // console.log(header_data);
-    sankeydata = {"nodes": [], "links": []};
     csv_data = d3.csvParse(header_data);
+    sankeyDataGen();
+    drawPlot(sankeydata);
+})
+
+function sankeyDataGen(){
     // build the set of categories of each key
     keys.forEach(function(k){
         key_set.push(new Set(csv_data.map(function(d) { return d[k]; })));
@@ -42,7 +48,7 @@ d3.text(dataset_path).then(function(data){
             sankeydata.nodes.push({"name" : k + '_' + d})
         })
     })
-    console.log(sankeydata.nodes);
+    console.log("nodes:", sankeydata.nodes);
     // sankeydata.nodes.forEach(function(d, i){
     //     sankeydata.nodes[i] = {"name" : d.name};
     // })
@@ -101,11 +107,10 @@ d3.text(dataset_path).then(function(data){
         sankeydata.links[i].target = nodes_list.indexOf(sankeydata.links[i].target);
     });
     console.log(sankeydata);
-    drawPlot(sankeydata);
-})
+}
 
 function drawPlot(sankeydata){
-    console.log(sankeydata);
+    console.log("here", sankeydata);
     // draw the sankey diagram according to graph
     var sankey = d3.sankey()
         .nodeWidth(36)
