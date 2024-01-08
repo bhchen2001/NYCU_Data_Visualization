@@ -167,7 +167,8 @@ function renderHeatmap(count){
         .on("mouseleave", mouseleave);
 
     /* add the legend */
-    var legend = svg.selectAll(".legend")
+    var legend = svg
+        .selectAll(".legend")
         .data(myColor.ticks(6).slice(1).reverse())
         .enter().append("g")
         .attr("class", "legend")
@@ -205,6 +206,12 @@ function renderHeatmap(count){
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .text("Heatmap of the number of people in each timeslot of each weekday");
+
+    svg.selectAll("text")
+        .style("opacity", 0)
+        .transition()
+        .duration(transition_time)
+        .style("opacity", 0.8);
 
     // /* add the x-axis label */
     // svg.append("text")

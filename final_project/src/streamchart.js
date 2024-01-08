@@ -37,37 +37,126 @@ function weather_stream(dateStart, dateEnd){
                 `translate(${margin.left}, ${margin.top})`);
     
 
-        var keys = ['晴', '陰', '雨'];
+        var keys = ['晴','陰','雨'];
         var colors = ['#ffc300','#87bfd5','#0b9bf1'];
-        function aggregateWeatherData(inputData) {
-            const result = {};
-            
-            inputData.forEach(item => {
-                const dateKey = item.Date_ID.substring(0, 6); // 取前6個字元作為日期
-                const weather = item.天候名稱;
+        let data;
 
-                if (!result[dateKey]) {
-                    result[dateKey] = { date: dateKey };
-                }
+        if (dateEnd - dateStart > 10){
+            function aggregateWeatherData(inputData) {
+                const result = {};
+                
+                inputData.forEach(item => {
+                    const dateKey = item.Date_ID.substring(0, 6); // 取前6個字元作為日期
+                    const weather = item.天候名稱;
 
-                if (!result[dateKey][weather]) {
-                    result[dateKey][weather] = 0;
-                }
+                    if (!result[dateKey]) {
+                        result[dateKey] = { date: dateKey };
+                    }
 
-                result[dateKey][weather]++;
+                    if (!result[dateKey][weather]) {
+                        result[dateKey][weather] = 0;
+                    }
+
+                    result[dateKey][weather]++;
+                });
+
+                return Object.values(result);
+            }
+
+            data = aggregateWeatherData(raw_data);
+
+            // parse the date
+            var parseDate = d3.timeParse("%Y%m");
+            data.forEach(function(d) {
+                d.date_standard = parseDate(d.date);
             });
-
-            return Object.values(result);
         }
 
-        data = aggregateWeatherData(raw_data);
+        if (dateEnd - dateStart >= 2 && dateEnd - dateStart <= 10) {
+
+            // Function to get the week number belonging to the date
+            function getWeekNumber(dateString) {
+                let date = new Date(dateString.substring(0, 4), dateString.substring(4, 6) - 1, dateString.substring(6, 8));
+                let firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+                let pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+                return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+            }
+
+            // Function to aggregate data by week
+            function aggregateWeatherData(inputData) {
+                const result = {};
+                
+                inputData.forEach(item => {
+                    const dateKey = item.Date_ID.substring(0, 8); 
+                    const weather = item.天候名稱;
+                    const weekNum = getWeekNumber(dateKey);
+                    const weekKey = `${dateKey.substring(0, 4)}W${weekNum.toString().padStart(2, '0')}`;
+                    // parse the date
+                    var parseDate = d3.timeParse("%YW%W");
+                    var dateParser = d3.timeFormat("%Y%m%d");
+        
+                    if (!result[weekKey]) {
+                        result[weekKey] = { 
+                            date: dateParser(parseDate(weekKey)),
+                            date_standard: parseDate(weekKey), 
+                            endDate: new Date(parseDate(weekKey).getTime() + 6 * 24 * 60 * 60 * 1000)
+                        };
+                        keys.forEach(key => result[weekKey][key] = 0); 
+                    }
+                           
+                    result[weekKey][weather]++;
+                });
+
+                return Object.values(result);
+            }
+        
+            data = aggregateWeatherData(raw_data);
+            
+            // sort date 
+            data.sort(function(a, b) {
+                return a.date.localeCompare(b.date);
+            });
+      
+        }
+        
+        if (dateEnd - dateStart < 2 ){
+
+            function aggregateWeatherData(inputData) {
+                const result = {};
+
+                
+                inputData.forEach(item => {
+                    const dateKey = item.Date_ID.substring(0, 8); 
+                    const weather = item.天候名稱;
+
+                    if (!result[dateKey]) {
+                        result[dateKey] = { date: dateKey };
+                        keys.forEach(w => {
+                            result[dateKey][w] = 0;
+                        });
+                    }
+
+                
+                    result[dateKey][weather]++;
+                });
+
+                return Object.values(result);
+            }
+
+            data = aggregateWeatherData(raw_data);
+
+             // parse the date
+            var parseDate = d3.timeParse("%Y%m%d");
+            data.forEach(function(d) {
+                d.date_standard = parseDate(d.date);
+            });
+
+   
+        }
 
         let year = "2022";
         let startDate = year + dateStart.toString().padStart(2, '0'); // "202201"
-        let endDate = year + (+dateEnd + 1).toString().padStart(2, '0');     // "202203"
-
-        console.log(startDate);
-        console.log(endDate);
+        let endDate = year + (+dateEnd+1).toString().padStart(2, '0');     // "202203"
 
         // filter date between startDate and endDate
         let filteredData = data.filter(record => {
@@ -77,22 +166,15 @@ function weather_stream(dateStart, dateEnd){
 
         // renew data 
         data = filteredData;
-
-
-
-        // parse the date
-        var parseDate = d3.timeParse("%Y%m");
-        data.forEach(function(d) {
-            d.date_standard = parseDate(d.date);
-        });
+        console.log("stream",data);
 
         // Add X axis
         const x = d3.scaleTime()
         .domain(d3.extent(data, function(d) { return d.date_standard; })) // input = date.min ~ date.max
         .range([ 0, width ]);
         svg.append("g")
-        .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(x).ticks(12));
+        .attr("transform", `translate(0, ${height+3})`)
+        .call(d3.axisBottom(x));
 
         // Add Y axis
         const y = d3.scaleLinear()
@@ -102,7 +184,7 @@ function weather_stream(dateStart, dateEnd){
         svg.append("g")
             .call(d3.axisLeft(y));
 
-            svg
+        svg
             .selectAll("path.domain")
             .style("opacity", 0)
             .transition()
@@ -135,6 +217,7 @@ function weather_stream(dateStart, dateEnd){
         .keys(keys)
         (data)
 
+
         // Show the areas
         svg
             .selectAll("mylayers")
@@ -143,8 +226,10 @@ function weather_stream(dateStart, dateEnd){
             .style("fill", function(d) { return color(d.key); })
             .style("opacity", 0)
             .attr("d", d3.area()
-                .x(function(d, i) { return x(d.data.date_standard); })
-                .y0(function(d) { return y(d[0]); })
+                .x(function(d, i) { 
+                    return x(d.data.date_standard); })
+                .y0(function(d) {
+                    return y(d[0]); })
                 .y1(function(d) { return y(d[1]); })
             )
 
@@ -181,27 +266,60 @@ function weather_stream(dateStart, dateEnd){
                 .range(d3.extent(data, function(d) { return d.date_standard; }));
 
             var dataX = xInverse(x);
-            var value, date_point;
+            var value, date_start, date_end;
+            parseDate = d3.timeParse("%Y%m%d");
 
             for (let i = 0; i < data.length; i++){
-                if (dataX.getTime() >= data[i].date_standard.getTime() && dataX.getTime() < data[i+1].date_standard.getTime()) {
-                    // dataX between data[i] and data[i+1]
-                    date_point = data[i].date_standard;
-                    value = data[i][category];
-                    break;
+                if (dateEnd - dateStart > 10 ){
+                    if (dataX.getTime() <= parseDate(data[0].date + '15').getTime()){
+                        date_start = data[0].date_standard;
+                        date_end = data[0].endDate;
+                        value = data[0][category];
+                        break;
+                    }
+                    if (dataX.getTime() >= parseDate(data[i].date + '15').getTime() && dataX.getTime() < parseDate(data[i+1].date + '15').getTime()) {
+                        date_start = data[i+1].date_standard;
+                        date_end = data[i+1].endDate;
+                        value = data[i+1][category];
+                        break;
+                    }
                 }
-
+                else{
+                    if (dataX.getTime() >= data[i].date_standard.getTime() && dataX.getTime() < data[i+1].date_standard.getTime()) {
+                        // dataX between data[i] and data[i+1]
+                        date_start = data[i].date_standard;
+                        date_end = data[i].endDate;
+                        value = data[i][category];
+                        break;
+                    }
+                }
             }
 
-            var dateParser = d3.timeFormat("%b %Y");
-
-            // const tooltip = d3.select("#tooltip");
-                tooltip
+            tooltip
                     .style("opacity", 1)
                     .style("color", "white")
-                    .html(`天氣: ${category}<br>Date: ${dateParser(date_point)}<br>案例數: ${value}`)
                     .style("left", event.pageX + 10 + "px")
                     .style("top", event.pageY + 10 + "px");
+
+            if (dateEnd - dateStart <= 10 && dateEnd - dateStart >= 2 ){
+                var dateParser = d3.timeFormat("%b %d");
+                tooltip
+                    .html(`天氣: ${category}<br>Date: ${dateParser(date_start)} ~ ${dateParser(date_end)}<br>案例數: ${value}`)
+
+            }
+            if (dateEnd - dateStart < 2 ){
+                var dateParser = d3.timeFormat("%b %d");
+                tooltip
+                    .html(`天氣: ${category}<br>Date: ${dateParser(date_start)}<br>案例數: ${value}`)
+
+            }
+            if (dateEnd - dateStart > 10 ){
+                var dateParser = d3.timeFormat("%b %Y");
+                tooltip
+                    .html(`天氣: ${category}<br>Date: ${dateParser(date_start)}<br>案例數: ${value}`)
+            }
+
+            
         }
 
         var mouseleave = function(d) {

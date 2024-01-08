@@ -115,7 +115,7 @@ function cause_bar(dateStart, dateEnd){
         z.domain(data.columns.slice(1));
 
         // append the rectangles for the bar chart
-        data.forEach(function(d) {
+        data.forEach(function(d){
             var x0 = 0;
             d.boxes = z.domain().map(function(name) { return {name: name, x0: x0, x1: x0 += +d[name]}; });
              // Sort the boxes based on size

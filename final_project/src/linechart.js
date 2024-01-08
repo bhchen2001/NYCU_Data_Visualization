@@ -17,49 +17,41 @@ function death_line(datestart, dateend){
         document.body.appendChild(newDiv);
         let data;
 
-        if (dateend - datestart < 2){
-            // convert Date_ID to %Y%m%d
-            function getFormattedDate(dateId) {
-                return dateId.substring(0, 8);
-            }
-
-            // using reduce funciton to calculate deaths & Injuries
-            let summary = raw_data.reduce((accumulator, current) => {
-                let date = getFormattedDate(current.Date_ID);
-                let month = parseInt(date.substring(4, 6), 10);
-                let deaths = parseInt(current.死亡人數, 10);
-                let injuries = parseInt(current.受傷人數, 10);
-
-                // filter month
-                if (month >= datestart && month <= dateend) {
-                    if (!accumulator[date]) {
-                        accumulator[date] = { deaths: 0, injuries: 0 };
-                    }
-                    accumulator[date].deaths += deaths;
-                    accumulator[date].injuries += injuries;
-                }
-
-                return accumulator;
-            }, {});
-
-            // convert format
-            data = Object.keys(summary).map(date => {
-                return { date: date, death_num: summary[date].deaths, injury_num: summary[date].injuries };
-            });
+        if (dateend - datestart > 10){
 
             // parse the date
-            var parseDate = d3.timeParse("%Y%m%d");
-            data.forEach(function(d) {
-                d.date = parseDate(d.date);
-            });
+            var parseDate = d3.timeParse("%Y%m");
+            var dateParser = d3.timeFormat("%Y%m");
+
+            function aggregateData(inputData) {
+                const result = {};
+                
+                inputData.forEach(item => {
+                    const dateKey = item.Date_ID.substring(0, 6); 
+                    const death_num = parseInt(item.死亡人數, 10);
+                    const injury_num = parseInt(item.受傷人數, 10);
+
+                    if (!result[dateKey]) {
+                        result[dateKey] = {
+                            death_num: 0,
+                            injury_num: 0,
+                            date_id: dateParser(parseDate(dateKey)),
+                            date: parseDate(dateKey), 
+                        };
+                    }
+
+                    result[dateKey].death_num += death_num;
+                    result[dateKey].injury_num += injury_num;
+                });
+
+                return Object.values(result);
+            }
+
+            data = aggregateData(raw_data);    
+            
         }
 
         if (dateend - datestart >= 2 && dateend - datestart <= 10){
-
-            // Function to convert Date_ID to %Y%m%d
-            function getFormattedDate(dateId) {
-                return dateId.substring(0, 8);
-            }
 
             // Function to get the week number belonging to the date
             function getWeekNumber(dateString) {
@@ -69,114 +61,95 @@ function death_line(datestart, dateend){
                 return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
             }
 
-            // Function to get the start of the week belonging to this date
-            function getWeekStartDate(dateString) {
-                let date = new Date(dateString.substring(0, 4), dateString.substring(4, 6) - 1, dateString.substring(6, 8));
-                // Calculate the difference in days to Monday
-                let dayDiff = date.getDay() === 0 ? 6 : date.getDay() - 1; // Note: getDay() is 0 (Sunday) to 6 (Saturday)
-                let weekStart = new Date(date.getFullYear(), date.getMonth(), date.getDate() - dayDiff);
-                return weekStart.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-            }
-
-            // Function to get the end of the week belonging to this date
-            function getWeekEndDate(dateString) {
-                let date = new Date(dateString.substring(0, 4), dateString.substring(4, 6) - 1, dateString.substring(6, 8));
-                // Calculate the difference in days to Sunday
-                let dayDiff = date.getDay() === 0 ? 0 : 7 - date.getDay(); // Note: getDay() is 0 (Sunday) to 6 (Saturday)
-                let weekEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate() + dayDiff);
-                return weekEnd.toISOString().split('T')[0]; // Format to YYYY-MM-DD
-            }
-
-            // Use the reduce function to count deaths and injuries and filter and organize data by week
-            let summary = raw_data.reduce((accumulator, current) => {
-                let date = getFormattedDate(current.Date_ID);
-                let month = parseInt(date.substring(4, 6), 10);
-                let year = date.substring(0, 4);
-                let deaths = parseInt(current.死亡人數, 10);
-                let injuries = parseInt(current.受傷人數, 10);
-
-                /// Filter months and count weeks
-                if (month >= datestart && month <= dateend) {
-                    let weekNum = getWeekNumber(date);
-                    let weekKey = `${year}W${weekNum.toString().padStart(2, '0')}`;
-
-                    // If data for this week has not been created yet, initialize
-                    if (!accumulator[weekKey]) {
-                        let weekStartDate = getWeekStartDate(date); 
-                        let weekEndDate = getWeekEndDate(date); 
-                        accumulator[weekKey] = {
-                            deaths: 0,
-                            injuries: 0,
-                            startDate: weekStartDate, 
-                            endDate: weekEndDate 
+            // Function to aggregate data by week
+            function aggregateWeatherData(inputData) {
+                const result = {};
+                
+                inputData.forEach(item => {
+                    const dateKey = item.Date_ID.substring(0, 8); 
+                    const death_num = parseInt(item.死亡人數, 10);
+                    const injury_num = parseInt(item.受傷人數, 10);
+                    const weekNum = getWeekNumber(dateKey);
+                    const weekKey = `${dateKey.substring(0, 4)}W${weekNum.toString().padStart(2, '0')}`;
+                    // parse the date
+                    var parseDate = d3.timeParse("%YW%W");
+                    var dateParser = d3.timeFormat("%Y%m%d");
+        
+                    if (!result[weekKey]) {
+                        result[weekKey] = { 
+                            death_num: 0,
+                            injury_num: 0,
+                            date_id: dateParser(parseDate(weekKey)),
+                            date: parseDate(weekKey), 
+                            endDate: new Date(parseDate(weekKey).getTime() + 6 * 24 * 60 * 60 * 1000)
                         };
                     }
-                    accumulator[weekKey].deaths += deaths;
-                    accumulator[weekKey].injuries += injuries;
-                }
+                           
+                    result[weekKey].death_num += death_num;
+                    result[weekKey].injury_num += injury_num;
+                });
 
-
-                return accumulator;
-            }, {});
-
-
-            data = Object.keys(summary).map(weekKey => {
-                return {
-                    week: weekKey,
-                    death_num: summary[weekKey].deaths,
-                    injury_num: summary[weekKey].injuries,
-                    date: summary[weekKey].startDate, 
-                    endDate: summary[weekKey].endDate 
-                };
-            });
-            data.shift(); 
+                return Object.values(result);
+            }
         
-            // parse the date
-            var parseDate = d3.timeParse("%Y-%m-%d");
-            data.forEach(function(d) {
-                d.date = parseDate(d.date);
-                d.endDate = parseDate(d.endDate);
+            data = aggregateWeatherData(raw_data);
+            
+            // sort date 
+            data.sort(function(a, b) {
+                return a.date_id.localeCompare(b.date_id);
             });
+        
    
         
         }
 
-        if (dateend - datestart > 10){
-            // convert Date_ID to %Y%m%d
-            function getFormattedDate(dateId) {
-                return dateId.substring(0, 6);
+        if (dateend - datestart < 2){
+            // parse the date
+            var parseDate = d3.timeParse("%Y%m%d");
+            var dateParser = d3.timeFormat("%Y%m%d");
+            
+            function aggregateData(inputData) {
+                const result = {};
+
+                inputData.forEach(item => {
+                    const dateKey = item.Date_ID.substring(0, 8);
+                    const death_num = parseInt(item.死亡人數, 10);
+                    const injury_num = parseInt(item.受傷人數, 10); 
+
+                    if (!result[dateKey]) {
+                        result[dateKey] = { 
+                            death_num: 0,
+                            injury_num: 0,
+                            date_id: dateParser(parseDate(dateKey)),
+                            date: parseDate(dateKey),
+
+                        };
+ 
+                    }
+                    result[dateKey].death_num += death_num;
+                    result[dateKey].injury_num += injury_num;
+                });
+
+                return Object.values(result);
             }
 
-            // using reduce funciton to calculate deaths & Injuries
-            let summary = raw_data.reduce((accumulator, current) => {
-                let date = getFormattedDate(current.Date_ID);
-                let month = parseInt(date.substring(4, 6), 10);
-                let deaths = parseInt(current.死亡人數, 10);
-                let injuries = parseInt(current.受傷人數, 10);
+            data = aggregateData(raw_data);
 
-                // filter month
-                if (month >= datestart && month <= dateend) {
-                    if (!accumulator[date]) {
-                        accumulator[date] = { deaths: 0, injuries: 0 };
-                    }
-                    accumulator[date].deaths += deaths;
-                    accumulator[date].injuries += injuries;
-                }
-
-                return accumulator;
-            }, {});
-
-            // convert format
-            data = Object.keys(summary).map(date => {
-                return { date: date, death_num: summary[date].deaths, injury_num: summary[date].injuries };
-            });
-
-            // parse the date
-            var parseDate = d3.timeParse("%Y%m");
-            data.forEach(function(d) {
-                d.date = parseDate(d.date);
-            });
         }
+
+        let year = "2022";
+        let startDate = year + datestart.toString().padStart(2, '0'); // "202201"
+        let endDate = year + (+dateend+1).toString().padStart(2, '0');     // "202203"
+
+        // filter date between startDate and endDate
+        let filteredData = data.filter(record => {
+            let dateId = record.date_id;
+            return dateId >= startDate && dateId <= endDate;
+        });
+
+        // renew data 
+        data = filteredData;
+        console.log("line",data);
 
          // set size of range
         const margin = {top: 20, right: 30, bottom: 30, left: 60},
@@ -312,11 +285,11 @@ function death_line(datestart, dateend){
                 .style("stroke-width", "2.5px");
         };
 
-        if (dateend - datestart > 8){
+        if (dateend - datestart > 10){
             var dateParser = d3.timeFormat("%b %Y");
         }
         else{
-            var dateParser = d3.timeFormat("%b %d %Y");
+            var dateParser = d3.timeFormat("%b %d");
         }
 
         var mousemove_death = function(event, d) {
