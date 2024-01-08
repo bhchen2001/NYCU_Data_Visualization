@@ -146,7 +146,7 @@
 \section{Abstract}
 
   In this project, we develop a data vislualization system for
-  raffic accident data in Taiwan in 2022.
+  Taiwan traffic accident data in 2022.
   Our goal is to find out several insights
   related to the cause and trend of traffic accident,
   which can help the experts and government to improve traffic safety.
@@ -164,11 +164,8 @@
   and the circumstance such as weather condition at the time that the accident happened.
   Therefore, an easy-to-understand data vislualization 
   can help the experts to analyze the cause of the accident
-  and promote the right policy to drivers and pedestrians.
-  By analyzing the circumstance of the accident,
-  we can also find the dangerous road condition and time period,
-  which can help the government to decrease the accident rate 
-  by improving the road condition and employing more traffic police at the certain time period.
+  and promote the right policy to drivers and pedestrians,
+  the government can also use the analysis to improve the traffic safety.
   
   \subsection{Questions to Answer}
   
@@ -176,7 +173,7 @@
   
   \begin{enumerate}
     \item Which time period has the highest accident rate?
-    \item Which weather condition mainly causes the accident?
+    \item Is there any difference between the accident rate in different cities?
     \item Is there any relationship between the 
     driver-contributed causes and the type of vehicle?
     \item Which part of the vehicle is most likely to be hit and fragile during the crash?
@@ -224,7 +221,7 @@ and the crash position distribution of vehicle.
 \subsection{Taiwan Traffic Accident Map}
 
 This map shows the death / injury count of each cities in Taiwan.
-The user can directly indicate which city has high fatality counts 
+The user can directly indicate which city has high casualty count
 in the selected time period with the ordinal color scheme.
 For detailed information, the user can move the mouse to the city
 and the tooltip will show the death / injury count,
@@ -233,7 +230,7 @@ which shows in Figure \ref{fig: map_tooltip}.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.6\textwidth]{"./Image/map_tooltip.png"}
+  \includegraphics[width=0.7\textwidth]{"./Image/map_tooltip.png"}
   \caption{Map Tooltip}
   \label{fig: map_tooltip}
 \end{figure}
@@ -346,7 +343,7 @@ by clicking the city, system will show the corresponding information.
 By selecting both A1 and A2 data, we can first find out the city
 that has the high fatality and injury count in 2022 is New Taipei City,
 TaoYuan City, Taichung City, and Tainan City in Figure \ref{fig: insight_trend_map}.
-each of them has more that 58000 injury count and 160 death count.
+Each of them has more that 58000 injury count and 160 death count.
 Comparing the casualty count between different cities in Taiwan,
 we can find out that the count in eastern Taiwan is much lower than the other cities,
 which we can infer is because the traffic density is lower in eastern Taiwan.
@@ -390,14 +387,15 @@ We can find out that the casualty count becomes
 higher in winter from Figure \ref{fig: hsinchu_line},
 this may cause by the early sunset and rainy weather in winter.
 From Figure \ref{fig: hsinchu_heatmap}, we can notice that
-the accident count is higher in the 8:00-12:00 and 16:00-20:00,
+the accident count is higher in 8:00-12:00 and 16:00-20:00 on weekday,
 which is the time period that people go to work and go home,
 so the traffic density is higher than other time period,
 which causes more accident.
 Furthermore, the accident count on Friday in period of 16:00-20:00
 is higher than other weekday, we think the reason is that
 people may go to other city for travel or go back to their hometown
-during the weekend, so the traffic density is higher than other weekday.
+after work on Friday
+, so the traffic density is higher than other weekday.
 
 \begin{figure}[htbp]
   \centering
@@ -479,13 +477,6 @@ Measures might include providing more parking spaces for trucks, enhancing drive
 Figure \ref{fig: insight_crash} shows the crash position distribution of vehicle
 with all data in 2022.
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.3\textwidth]{"./Image/insight_position.png"}
-  \caption{Crash Position Distribution of Vehicle in 2022}
-  \label{fig: insight_crash}
-\end{figure}
-
 In the dataset, the concentration of impact locations on the front and sides 
 of vehicles suggests a correlation with the causes of accidents. 
 For instance, frontal collisions, which are most prevalent 
@@ -512,6 +503,13 @@ measures and driver education programs. For example,
 enhancing awareness about maintaining safe distances, 
 proper lane-changing techniques, and the importance of attentiveness 
 at intersections can help reduce the occurrence of both frontal and side collisions.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.3\textwidth]{"./Image/insight_position.png"}
+  \caption{Crash Position Distribution of Vehicle in 2022}
+  \label{fig: insight_crash}
+\end{figure}
 
 \section{Challenge and Future Work}
 
@@ -546,7 +544,7 @@ the intricate and multifaceted nature of traffic incidents,
 revealing how they are influenced by regional dynamics, temporal trends, 
 and specific vehicle-related factors. This study has provided valuable insights, 
 addressing the questions raised in our objectives. 
-We observed notably higher accident rates in major urban areas compared to Eastern Taiwan, 
+We observed notably higher accident rates in major urban areas compared to eastern Taiwan, 
 discerned seasonal variations in accident occurrences, 
 and identified a disproportionate involvement of motorcycles and small cars in 
 certain accident types. These findings answer the questions initially posed, 
