@@ -14,7 +14,7 @@ let plotG = svg
         .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
 // input data
-let dataset_path = "dataset/spotify_data.csv";
+let dataset_path = "spotify_data.csv";
 let csv_dataset = [];
 
 let radialScale = d3.scaleLinear()
