@@ -292,9 +292,9 @@ the tooltip shows the time period and accident count of each cell.
 \subsection{Stacked Bar Chart of Driver-Contributed Cause and Vehicle Type}
 
 This stacked bar chart shows the ratio of vehicle type for each driver-contributed cause.
-User can first find out the frequent driver-contributed cause,
-which is sorted by the total accident count.
-Then, user can find out the vehicle type that is 
+The causes of accidents are listed from top to bottom in 
+descending order according to the number of accidents they caused.
+User can find out the vehicle type that is 
 most likely to be involved in the corresponding cause.
 Figure \ref{fig: stacked_tooltip} shows the stacked bar chart in our system,
 on this chart, we can find out that the most frequent cause is
@@ -414,6 +414,146 @@ during the weekend, so the traffic density is higher than other weekday.
   \caption{Accident Trend in Hsinchu}
   \label{fig: hsinchu}
 \end{figure}
+
+These observation can help the government in different cities to
+improve the traffic safety by employing more traffic police
+in the time period or place that has high accident count.
+Traffic education can also be promoted to the drivers and pedestrians
+to reduce the accident count in the future.
+
+\subsection{Vehicle Type \& Driver-Contributed Cause}
+
+Regarding the proportion of each vehicle type in the 
+causes of accidents throughout the entire year's whole data,
+we can find out some interesting insights in Figure \ref{fig: insight_cause}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{"./Image/insight_stacked.png"}
+  \caption{Proportion of Each Vehicle Type in the Causes of Accidents}
+  \label{fig: insight_cause}
+\end{figure}
+
+\subsubsection{Motorcycles occupy a larger proportion in all major causes of accidents}
+
+Since motorcycles have the highest number of accidents among all vehicle types, 
+it is reasonable that they also have a larger proportion in all major causes of accidents.
+
+\subsubsection{Compared to other vehicle types, 
+small cars are more likely to have accidents due to 
+"improper right turns," while motorcycles still have a higher 
+proportion for "improper left turns"}
+
+In the cause of "improper right turns," small cars have a much higher 
+percentage of accidents than motorcycles 
+(accounting for 65.3\% of the total number of accidents caused by this reason). 
+One possible explanation is that small cars have a blind spot when turning right, 
+especially for vehicles coming from the right rear, making it easier to 
+overlook potential dangers. However, motorcycles have a higher proportion for 
+"improper left turns," this may be due to many riders ignoring the "2 stage left turn" 
+signals that are designated for motorcycles at most intersections, 
+resulting in a high number of accidents. From this analysis, 
+it is important to emphasize that small car drivers need to be 
+particularly aware of pedestrians and vehicles on the right, 
+especially when turning right, to prevent collisions due to blind spots. 
+It is also crucial for motorcycle riders to be more aware and compliant 
+with the "2 stage left turn" rules.
+
+\subsubsection{Small trucks have a higher proportion of accidents due to
+“illegal parking or improper temporary stopping” compared to other vehicle types}
+
+There are two main reasons for this: first, 
+small trucks often need to load and unload goods on streets without dedicated areas, 
+forcing drivers to park or stop in inappropriate places; second, 
+the larger size of small trucks compared to other vehicles means that 
+even temporary improper parking can cause more significant traffic blockages or 
+visibility issues, increasing the risk of accidents. Understanding why 
+small trucks have a higher proportion of accidents due to 
+"illegal parking or improper stopping" can help develop targeted traffic 
+management strategies and driver training to reduce the occurrence of such accidents. 
+Measures might include providing more parking spaces for trucks, enhancing driver training,
+ and optimizing delivery schedules.
+
+\subsection{Crash Position Distribution of Vehicle}
+
+Figure \ref{fig: insight_crash} shows the crash position distribution of vehicle
+with all data in 2022.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.3\textwidth]{"./Image/insight_position.png"}
+  \caption{Crash Position Distribution of Vehicle in 2022}
+  \label{fig: insight_crash}
+\end{figure}
+
+In the dataset, the concentration of impact locations on the front and sides 
+of vehicles suggests a correlation with the causes of accidents. 
+For instance, frontal collisions, which are most prevalent 
+(indicated by the deep red color in the chart), are likely related to 
+"not paying attention to the condition of the car in front." 
+This could be due to drivers being distracted, leading to rear-end collisions.
+
+Side impacts, on the other hand, 
+could be associated with causes such as "improper left or right turns," 
+"improper lane changes or directional changes," or "failing to yield as required." 
+These types of accidents might occur when a vehicle is turning and either 
+misjudges the distance to an approaching vehicle or does not notice it. 
+Improper lane changes can lead to side collisions if drivers do not properly 
+check their blind spots or misjudge the speed and distance of vehicles in adjacent lanes.
+
+Additionally, the distribution pattern of impacts could be influenced 
+by traffic flow and road design. Intersections, for instance, 
+are common sites for both frontal and side impacts due to the crossing 
+paths of vehicles and the complexity of driving maneuvers involved.
+
+Understanding the relationship between impact locations and 
+accident causes can be crucial for developing targeted safety 
+measures and driver education programs. For example, 
+enhancing awareness about maintaining safe distances, 
+proper lane-changing techniques, and the importance of attentiveness 
+at intersections can help reduce the occurrence of both frontal and side collisions.
+
+\section{Challenge and Future Work}
+
+During the preprocessing of the dataset and the selection of features, 
+many potentially valuable pieces of information were discarded due to missing data, 
+imbalanced distributions, or the inability to effectively compare and 
+integrate certain features with others. Additionally, 
+the multifaceted nature of traffic accidents, 
+influenced by factors like temperature, holidays, road conditions, 
+and human behavior, makes it challenging to definitively identify specific 
+causes or predict patterns based solely on our dataset.
+
+This difficulty in data analysis highlights the complexity of traffic safety as a subject. 
+Traffic incidents are not isolated events but are the result of a 
+confluence of various factors, some of which may be outside the scope of the available data. 
+For future work, it would be beneficial to integrate additional datasets 
+that include more comprehensive environmental, temporal, and behavioral factors. 
+This could provide a more holistic view of the circumstances leading to 
+traffic accidents and aid in developing more effective prevention strategies.
+
+Moreover, the challenge of dealing with incomplete or unbalanced data underscores 
+the need for more robust data collection methods in the field of traffic safety. 
+Improving data quality and ensuring a more representative sample would significantly 
+enhance the reliability of the analysis. It also opens up possibilities for 
+applying advanced data analysis techniques, such as machine learning, 
+to uncover deeper insights and more accurately predict accident risks under various conditions.
+
+\section{Conclusion}
+
+The comprehensive analysis of Taiwan's 2022 traffic accident data has illuminated 
+the intricate and multifaceted nature of traffic incidents, 
+revealing how they are influenced by regional dynamics, temporal trends, 
+and specific vehicle-related factors. This study has provided valuable insights, 
+addressing the questions raised in our objectives. 
+We observed notably higher accident rates in major urban areas compared to Eastern Taiwan, 
+discerned seasonal variations in accident occurrences, 
+and identified a disproportionate involvement of motorcycles and small cars in 
+certain accident types. These findings answer the questions initially posed, 
+offering a clearer understanding of the variables affecting road safety. 
+The insights derived from this study are invaluable for the development of 
+targeted traffic management strategies and the formulation of effective driver 
+education programs. 
 
 % \subsection{Color Selection}
 
