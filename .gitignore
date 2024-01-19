@@ -295,3 +295,6 @@ TSWLatexianTemp*
 
 # xwatermark package
 *.xwm
+
+# folder of vscode
+.vscode/
